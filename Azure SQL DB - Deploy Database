@@ -1,0 +1,55 @@
+Final Cutover : 
+
+
+Stop the Application before generating bacpac
+ 
+Check with query if any open connections
+Sp_who2 active
+ 
+Confirm the Collation Settings for DB
+Source: Database - Property - Collation
+
+ 
+SKU Sizing
+
+
+
+
+Deploy 
+
+Right - task - Deploy database to Azure SQL DB
+ 
+Post Deployment change source to Read-Only
+
+USE [master]
+GO
+ALTER DATABASE [DBNAME] SET  READ_ONLY WITH NO_WAIT
+GO
+
+
+ 
+Post Migration Check Table Details and Row Count
+
+SELECT      QUOTENAME(SCHEMA_NAME(sOBJ.schema_id)) + '.' + QUOTENAME(sOBJ.name) AS [TableName]      , SUM(sdmvPTNS.row_count) AS [RowCount]FROM      sys.objects AS sOBJ
+      INNER JOIN sys.dm_db_partition_stats AS sdmvPTNS
+            ON sOBJ.object_id = sdmvPTNS.object_id
+WHERE      sOBJ.type = 'U'      AND sOBJ.is_ms_shipped = 0x0      AND sdmvPTNS.index_id < 2GROUP BY      sOBJ.schema_id
+      , sOBJ.name
+ORDER BY [TableName]
+GO
+ 
+--Row count 
+
+Import table which will fail to Azure SQL DB 
+
+Right click on database  -> Export  
+
+     Choose a data source : 
+
+
+
+
+
+ 
+ 
+
